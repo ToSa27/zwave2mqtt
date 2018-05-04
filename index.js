@@ -6,8 +6,10 @@ const config = require('./config.js')
 const mqtt = require('mqtt')
 const ZwaveLib = require('openzwave-shared');
 
+var mqttClient;
 var zwave;
 var zwaveid = null;
+var zwaveconnected = false;
 var devices = [];
 
 // ToDo : load from file...
@@ -257,20 +259,6 @@ function publishValue (valueid) {
       log.debug('Couldn\'t publish to %s because not connected', topic)
     }
   }
-}
-
-// This function is used to check certain input parameters to be numbers
-function IsNumeric (val) {
-  return !isNaN(parseInt(val))
-}
-
-function ConvertToObjectIfPossible (input) {
-  try {
-    return JSON.parse(input)
-  } catch (e) {
-    log.debug('Error parsing json %j', e)
-  }
-  return input
 }
 
 start()
