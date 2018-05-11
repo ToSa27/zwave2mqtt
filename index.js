@@ -199,13 +199,11 @@ async function handleIncomingMessage (topic, payload) {
 
 // This function is called when a device command is recognized by 'handleIncomingMessage'
 async function handleDeviceCommand (address, payload) {
+  log.debug('executing device command', address, payload);
+  var val = JSON.parse(payload).val;
   var parts = address.split('-');
-  zwave.setValue({
-    node_id: parts[0],
-    class_id: parts[1],
-    instance: parts[2],
-    index: parts[3]
-  }, payload.val);
+  log.debug('executing device command', address, val);
+  zwave.setValue(parseInt(parts[0].trim()), parseInt(parts[1].trim()), parseInt(parts[2].trim()), parseInt(parts[3].trim()), val);
 }
 
 function publishConnectionStatus () {
