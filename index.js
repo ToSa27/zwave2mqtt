@@ -179,10 +179,10 @@ async function handleIncomingMessage (topic, payload) {
   if (parts[1] === 'set' && parts.length === 4) {
     return handleDeviceCommand(parts[3], payload)
       .then(result => {
-        log.debug('Executed %s for %s result: %j', parts[3], device.name, result)
+        log.debug('Executed %s result: %j', parts[3], result)
       })
       .catch(err => {
-        log.error('Error executing %s for %s %j', parts[3], device.name, err)
+        log.error('Error executing %s %j', parts[3], err)
       });
   } else if (parts[1] === 'cmd' && parts.length === 3) {
     /*
@@ -201,9 +201,9 @@ async function handleIncomingMessage (topic, payload) {
 async function handleDeviceCommand (address, payload) {
   var parts = address.split('-');
   zwave.setValue({
-    node_id: parts[0], 
-    class_id: parts[1], 
-    instance: parts[2], 
+    node_id: parts[0],
+    class_id: parts[1],
+    instance: parts[2],
     index: parts[3]
   }, payload.val);
 }
