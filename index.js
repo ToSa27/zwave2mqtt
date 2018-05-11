@@ -174,24 +174,18 @@ function start () {
 async function handleIncomingMessage (topic, payload) {
   payload = payload.toString()
   log.debug('Incoming message to %s %j', topic, payload)
-
   const parts = topic.toLowerCase().split('/')
-/*
   // Commands for devices
   if (parts[1] === 'set' && parts.length === 4) {
-    let device = devices.find((device) => { return device.name.toLowerCase() === parts[2] })
-    if (device) {
-      return handleDeviceCommand(device, parts[3], payload)
-        .then(result => {
-          log.debug('Executed %s for %s result: %j', parts[3], device.name, result)
-        })
-        .catch(err => {
-          log.error('Error executing %s for %s %j', parts[3], device.name, err)
-        })
-    } else {
-      log.error('Device with name %s not found', parts[2])
-    }
+    return handleDeviceCommand(parts[3], payload)
+      .then(result => {
+        log.debug('Executed %s for %s result: %j', parts[3], device.name, result)
+      })
+      .catch(err => {
+        log.error('Error executing %s for %s %j', parts[3], device.name, err)
+      });
   } else if (parts[1] === 'cmd' && parts.length === 3) {
+    /*
     return handleGenericCommand(parts[2], payload)
       .then(result => {
         log.debug('Executed %s result: %j', parts[2], result)
@@ -199,32 +193,19 @@ async function handleIncomingMessage (topic, payload) {
       .catch(err => {
         log.error('Error executing %s %j', parts[2], err)
       })
+    */
   }
-*/
 }
 
 // This function is called when a device command is recognized by 'handleIncomingMessage'
-async function handleDeviceCommand (device, command, payload) {
-  log.debug('Incoming device command %s for %s payload %s', command, device.name, payload)
-  switch (command) {
-/*
-    case 'play':
-      return device.play()
-    case 'volume':
-      if (IsNumeric(payload)) {
-        var vol = parseInt(payload)
-        if (vol >= 0 && vol <= 100) {
-          return device.setVolume(vol)
-        }
-      } else {
-        log.error('Payload for setting volume is not numeric')
-      }
-      break
-*/
-    default:
-      log.debug('Command %s not yet supported', command)
-      break
-  }
+async function handleDeviceCommand (address, payload) {
+  var parts = address.split('-');
+  zwave.setValue({
+    node_id: parts[0], 
+    class_id: parts[1], 
+    instance: parts[2], 
+    index: parts[3]
+  }, payload.val);
 }
 
 function publishConnectionStatus () {
@@ -250,9 +231,14 @@ function publishValue (valueid) {
     if (mqttClient.connected) {
       let data = {
         ts: new Date().getTime(),
-        val: value,
-        label: devices[nodeid].values[valueid].label
+        val: value
       };
+      var uom = devices[nodeid].values[valueid].units;
+      if (uom && uom.length > 0)
+        data.uom = uom;
+      var label = devices[nodeid].values[valueid].label;
+      if (label && label.length > 0 && label != "Unknown")
+        data.label = label;
       mqttClient.publish(topic, JSON.stringify(data), true);
       log.debug('Published to %s', topic)
     } else {
