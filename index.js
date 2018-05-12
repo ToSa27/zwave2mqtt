@@ -185,19 +185,25 @@ async function handleIncomingMessage (topic, payload) {
         log.error('Error executing %s %j', parts[3], err)
       });
   } else if (parts[1] === 'cmd' && parts.length === 3) {
-    /*
-    return handleGenericCommand(parts[2], payload)
+    return handleControllerCommand(parts[2], payload)
       .then(result => {
         log.debug('Executed %s result: %j', parts[2], result)
       })
       .catch(err => {
         log.error('Error executing %s %j', parts[2], err)
       })
-    */
   }
 }
 
-// This function is called when a device command is recognized by 'handleIncomingMessage'
+async function handleControllerCommand (cmd, payload) {
+  log.debug('executing device command', cmd, payload);
+  switch (cmd) {
+    case "scan":
+      zwave.addNode(zwaveid, true);
+      break;
+  }
+}
+
 async function handleDeviceCommand (address, payload) {
   log.debug('executing device command', address, payload);
   var val = JSON.parse(payload).val;
