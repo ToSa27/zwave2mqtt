@@ -231,7 +231,7 @@ function publishValue (valueid) {
   var nodeid = valueid.split('-')[0];
   var topic = config.name + '/status/' + nodeid + '/' + valueid;
   var value = devices[nodeid].values[valueid].value;
-  if (value) {
+  if (value != null) {
     if (mqttClient.connected) {
       let data = {
         ts: new Date().getTime(),
