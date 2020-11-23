@@ -22,7 +22,7 @@
     "mqtt": "^2.17.0",
     "openzwave-shared": "^1.4.3",
     "yalm": "^4.1.0",
-    "yargs": "^11.1.0"
+    "yargs": "^16.0.0"
   },
   "devDependencies": {
     "pre-commit": "^1.2.2",
